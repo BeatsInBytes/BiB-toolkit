@@ -3,10 +3,21 @@
 #lists all inputs
 argList=$(echo "$@" | tr ' ' '\n')
 
-file=$(echo "$argList" | grep -v '-')
+# Read the input file(s)
+file=$(echo "$argList" | grep -v '-' | grep . )
+# Check number of files
+numFile=$(echo "$file" | grep . | wc -l | tr -d ' ')
 
-if [ -z $file ]; then
-   echo "   keysig: ERROR: No input file specified"
+if [ $numFile -eq '0' ]; then
+   echo "   
+   keysig: ERROR: No input file specified
+   "
+elif [ $numFile -gt '1' ]; then
+   echo "
+   keysig: ERROR: $numFile input files; only 1 supported
+   "
+else
+   echo "all good"
 fi
 
 #  for i; do 
