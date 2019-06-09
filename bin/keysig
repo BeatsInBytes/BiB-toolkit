@@ -3,8 +3,11 @@
 #lists all inputs
 argList=$(echo "$@" | tr ' ' '\n')
 
-echo "$argList"
+file=$(echo "$argList" | grep -v '-')
 
+if [ -z $file ]; then
+   echo "   keysig: ERROR: No input file specified"
+fi
 
 #  for i; do 
 #     if [ $i == '-h' ]; then

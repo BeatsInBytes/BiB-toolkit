@@ -1,10 +1,10 @@
-CORRUPT(1)
+KEYSIG(1)
 
 NAME
-    corrupt - modify files by randomly changing bits
+    keysig - finds key signatures in a kern file
 
 SYNOPSIS
-    corrupt [-n BITS] [--bits BITS] file...
+    keysig [-h] [--help] file...
 
 DESCRIPTION
     corrupt modifies files by toggling a randomly chosen bit.
@@ -13,4 +13,4 @@ OPTIONS
     -n, --bits=BITS
         Set the number of bits to modify. Default is one bit.
 
-CORRUPT(1)
+KEYSIG(1)
