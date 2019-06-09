@@ -1,0 +1,17 @@
+#!/bin/bash
+
+#lists all inputs
+argList=$(echo "$@" | tr ' ' '\n')
+
+echo "$argList"
+
+
+#  for i; do 
+#     if [ $i == '-h' ]; then
+#       DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+#       cat "${DIR}/man/keysig"
+#    elif [ $i == '--help' ]; then
+#       DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+#       cat "${DIR}/man/keysig"
+#    fi
+#  done
