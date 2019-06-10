@@ -3,7 +3,7 @@
 # Define the keysig function
 keySigFinder() {
    dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-   if [ $2 == 'true' ]; then
+   if [ $2 == 'true' ] || [ $3 == 'true' ]; then
       cat $dir/man/keysig
    else
       cat $1
@@ -23,20 +23,49 @@ numFile=$(echo "$file" | grep . | wc -l | tr -d ' ')
 
 # File number handling
 if [ $numFile -eq '0' ]; then
-   echo "   
+   argList=$(for i; do echo $i | grep ^- ; done)
+
+   help=$(echo $argList | tr ' ' '\n' | grep -- '^-h$')
+   if [ -z $help ]; then 
+      help=false
+   else
+      help=true
+   fi
+
+   helpFull=$(echo $argList | tr ' ' '\n' | grep -- '^--help$')
+   if [ -z $helpFull ]; then 
+      helpFull=false
+   else
+      helpFull=true
+   fi
+
+   if [ $help == 'true' ] || [ $helpFull == 'true' ]; then
+      dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+      cat $dir/man/keysig
+   else
+         echo "   
    keysig: ERROR: No input file specified
    "
+   fi
+
 elif [ $numFile -gt '1' ]; then
    echo "
    keysig: ERROR: $numFile input files; only 1 supported
    "
 else
    argList=$(for i; do echo $i | grep ^- ; done)
-   help=$(echo $argList | tr ' ' '\n' | grep -- '-h')
+   help=$(echo $argList | tr ' ' '\n' | grep -- '^-h$')
    if [ -z $help ]; then 
       help=false
    else
       help=true
+   fi
+
+   helpFull=$(echo $argList | tr ' ' '\n' | grep -- '^--help$')
+   if [ -z $helpFull ]; then 
+      helpFull=false
+   else
+      helpFull=true
    fi
 
    interpretations=$(echo $argList | tr ' ' '\n' | grep -- '-i')
@@ -53,7 +82,7 @@ else
       average=true
    fi
 
-   keySigFinder $file $help $interpretations $average
+   keySigFinder $file $help $helpFull $interpretations $average
 fi
 
 # for i; do 
