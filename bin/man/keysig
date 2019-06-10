@@ -4,7 +4,7 @@ NAME
     keysig - finds key signatures in a music file. For information on
 
 SYNOPSIS
-    keysig [-h] [--help] [-e] [--encodings] file...
+    keysig [-h] [--help] [-i] [--interpretations] [-s] [--scale-degree] [-a] [--average] file...
 
 DESCRIPTION
     Gives a detailed description of hte key signatures present in a song.

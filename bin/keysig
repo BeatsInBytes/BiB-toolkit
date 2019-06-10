@@ -2,7 +2,12 @@
 
 # Define the keysig function
 keySigFinder() {
-   echo $1
+   dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+   if [ $2 == 'true' ]; then
+      cat $dir/man/keysig
+   else
+      cat $1
+   fi
 }
 
 
@@ -10,13 +15,11 @@ keySigFinder() {
 allArgList=$(echo "$@" | tr ' ' '\n' )
 
 # Read the input file(s)
-file=$(echo "$allArgList" | rev | cut -c 2- | rev | grep -v '-' | grep . )
+file=$(echo "$allArgList" | sed '/^-/ d')
 
-echo "$file"
 # Check number of files
 numFile=$(echo "$file" | grep . | wc -l | tr -d ' ')
 
-argList=$(echo "$@" | tr ' ' '\n'  )
 
 # File number handling
 if [ $numFile -eq '0' ]; then
@@ -28,9 +31,29 @@ elif [ $numFile -gt '1' ]; then
    keysig: ERROR: $numFile input files; only 1 supported
    "
 else
-   # echo "$argList" | tr '-' '+' | grep '+'
-   echo done
-   # keySigFinder $file 
+   argList=$(for i; do echo $i | grep ^- ; done)
+   help=$(echo $argList | tr ' ' '\n' | grep -- '-h')
+   if [ -z $help ]; then 
+      help=false
+   else
+      help=true
+   fi
+
+   interpretations=$(echo $argList | tr ' ' '\n' | grep -- '-i')
+   if [ -z $interpretations ]; then 
+      interpretations=false
+   else
+      interpretations=true
+   fi
+
+   average=$(echo $argList | tr ' ' '\n' | grep -- '-a')
+   if [ -z $average ]; then 
+      average=false
+   else
+      average=true
+   fi
+
+   keySigFinder $file $help $interpretations $average
 fi
 
 # for i; do 
