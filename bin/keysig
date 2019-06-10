@@ -1,13 +1,24 @@
 #!/bin/bash
 
+# Define the keysig function
+keySigFinder() {
+   echo $1
+}
+
+
 #lists all inputs
-argList=$(echo "$@" | tr ' ' '\n')
+allArgList=$(echo "$@" | tr ' ' '\n' )
 
 # Read the input file(s)
-file=$(echo "$argList" | grep -v '-' | grep . )
+file=$(echo "$allArgList" | rev | cut -c 2- | rev | grep -v '-' | grep . )
+
+echo "$file"
 # Check number of files
 numFile=$(echo "$file" | grep . | wc -l | tr -d ' ')
 
+argList=$(echo "$@" | tr ' ' '\n'  )
+
+# File number handling
 if [ $numFile -eq '0' ]; then
    echo "   
    keysig: ERROR: No input file specified
@@ -17,15 +28,17 @@ elif [ $numFile -gt '1' ]; then
    keysig: ERROR: $numFile input files; only 1 supported
    "
 else
-   echo "all good"
+   # echo "$argList" | tr '-' '+' | grep '+'
+   echo done
+   # keySigFinder $file 
 fi
 
-#  for i; do 
-#     if [ $i == '-h' ]; then
+# for i; do 
+#    if [ $i == '-h' ]; then
 #       DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 #       cat "${DIR}/man/keysig"
 #    elif [ $i == '--help' ]; then
 #       DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 #       cat "${DIR}/man/keysig"
 #    fi
-#  done
+# done

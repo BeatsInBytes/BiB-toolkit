@@ -1,16 +1,16 @@
 KEYSIG(1)
 
 NAME
-    keysig - finds key signatures in a kern file
+    keysig - finds key signatures in a music file. For information on
 
 SYNOPSIS
-    keysig [-h] [--help] file...
+    keysig [-h] [--help] [-e] [--encodings] file...
 
 DESCRIPTION
-    corrupt modifies files by toggling a randomly chosen bit.
+    Gives a detailed description of hte key signatures present in a song.
 
 OPTIONS
-    -n, --bits=BITS
-        Set the number of bits to modify. Default is one bit.
-
+    -h, --help
+    Show man page for keysig
+        
 KEYSIG(1)
