@@ -8,7 +8,7 @@ SYNOPSIS
     keysig [-h] [--help] [-i] [--interpretations] [-s] [--scale-degree] [-a] [--average] file...
 
 DESCRIPTION
-    Gives a detailed description of hte key signatures present in a song.
+    Gives a detailed description of the key signatures present in a song.
 
 OPTIONS
     -h, --help

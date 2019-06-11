@@ -1,96 +1,103 @@
 #!/bin/bash
-
+usageMessage="keysig: usage: keysig [-isan] <inputfile>"
 # Define the keysig function
 keySigFinder() {
+   # $file $help $helpFull $interpretations $average
    dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
    if [ $2 == 'true' ] || [ $3 == 'true' ]; then
       cat $dir/man/keysig
    else
-      cat $1
+      if [ -f $1 ]; then
+         echo got here
+         
+      else
+         echo "keysig: ERROR: File '$1' does not exist"
+         echo "$usageMessage"
+      fi
    fi
 }
 
 
 #lists all inputs
 allArgList=$(echo "$@" | tr ' ' '\n' )
-
+ 
 # Read the input file(s)
 file=$(echo "$allArgList" | sed '/^-/ d')
 
 # Check number of files
 numFile=$(echo "$file" | grep . | wc -l | tr -d ' ')
 
+argNum=$(echo "$allArgList" | grep . | wc -l)
 
-# File number handling
-if [ $numFile -eq '0' ]; then
-   argList=$(for i; do echo $i | grep ^- ; done)
+argListFirst=$(for i; do echo $i | grep ^- ; done)
 
-   help=$(echo $argList | tr ' ' '\n' | grep -- '^-h$')
-   if [ -z $help ]; then 
-      help=false
-   else
-      help=true
-   fi
+echo "$argListFirst" | grep -v -- '^-a$' | grep -v -- '^-h$'
 
-   helpFull=$(echo $argList | tr ' ' '\n' | grep -- '^--help$')
-   if [ -z $helpFull ]; then 
-      helpFull=false
-   else
-      helpFull=true
-   fi
 
-   if [ $help == 'true' ] || [ $helpFull == 'true' ]; then
-      dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-      cat $dir/man/keysig
-   else
-         echo "   
-   keysig: ERROR: No input file specified
-   "
-   fi
-
-elif [ $numFile -gt '1' ]; then
-   echo "
-   keysig: ERROR: $numFile input files; only 1 supported
-   "
+if [ $argNum -eq 0 ]; then
+   echo "$usageMessage"
 else
-   argList=$(for i; do echo $i | grep ^- ; done)
-   help=$(echo $argList | tr ' ' '\n' | grep -- '^-h$')
-   if [ -z $help ]; then 
-      help=false
-   else
-      help=true
-   fi
+   # File number handling
+   if [ $numFile -eq '0' ]; then
+      argList=$(for i; do echo $i | grep ^- ; done)
 
-   helpFull=$(echo $argList | tr ' ' '\n' | grep -- '^--help$')
-   if [ -z $helpFull ]; then 
-      helpFull=false
-   else
-      helpFull=true
-   fi
+      help=$(echo $argList | tr ' ' '\n' | grep -- '^-h$')
+      if [ -z $help ]; then 
+         help=false
+      else
+         help=true
+      fi
 
-   interpretations=$(echo $argList | tr ' ' '\n' | grep -- '-i')
-   if [ -z $interpretations ]; then 
-      interpretations=false
-   else
-      interpretations=true
-   fi
+      helpFull=$(echo $argList | tr ' ' '\n' | grep -- '^--help$')
+      if [ -z $helpFull ]; then 
+         helpFull=false
+      else
+         helpFull=true
+      fi
 
-   average=$(echo $argList | tr ' ' '\n' | grep -- '-a')
-   if [ -z $average ]; then 
-      average=false
-   else
-      average=true
-   fi
+      if [ $help == 'true' ] || [ $helpFull == 'true' ]; then
+         dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+         cat $dir/man/keysig
+      else
+            echo "   
+      keysig: ERROR: No input file specified
+      "
+      fi
 
-   keySigFinder $file $help $helpFull $interpretations $average
+   elif [ $numFile -gt '1' ]; then
+      echo "
+      keysig: ERROR: $numFile input files; only 1 supported
+      "
+   else
+      argList=$(for i; do echo $i | grep ^- ; done)
+      help=$(echo $argList | tr ' ' '\n' | grep -- '^-h$')
+      if [ -z $help ]; then 
+         help=false
+      else
+         help=true
+      fi
+
+      helpFull=$(echo $argList | tr ' ' '\n' | grep -- '^--help$')
+      if [ -z $helpFull ]; then 
+         helpFull=false
+      else
+         helpFull=true
+      fi
+
+      interpretations=$(echo $argList | tr ' ' '\n' | grep -- '-i')
+      if [ -z $interpretations ]; then 
+         interpretations=false
+      else
+         interpretations=true
+      fi
+
+      average=$(echo $argList | tr ' ' '\n' | grep -- '-a')
+      if [ -z $average ]; then 
+         average=false
+      else
+         average=true
+      fi
+
+      keySigFinder $file $help $helpFull $interpretations $average
+   fi
 fi
-
-# for i; do 
-#    if [ $i == '-h' ]; then
-#       DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-#       cat "${DIR}/man/keysig"
-#    elif [ $i == '--help' ]; then
-#       DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-#       cat "${DIR}/man/keysig"
-#    fi
-# done
