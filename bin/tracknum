@@ -1,0 +1,28 @@
+#!/bin/bash
+
+
+usageMessage="ERROR: usage: tracknum <inputfile>"
+
+argList=$(for i; do echo $i; done)
+
+files=$(echo "$argList" | grep -v '-' | wc -l | tr -d ' ')
+
+opt=$(echo "$argList" | grep ^- | grep .)
+optNum=$(echo "$argList" | grep ^- | grep . | wc -l)
+
+if [ $optNum -gt 0 ]; then
+   echo "$usageMessage"
+   sleep .2
+   echo "
+The following are not recoginzed options for the keysig program:"
+   for i in $(seq 1 $optNum); do
+      printf "\t"
+      echo "$opt" | sed "${i}q;d"
+   done
+else
+    if [ $files -gt 1 ]; then
+        echo "keysig: ERROR: $files input files; only 1 supported"
+    else
+        cat $1 | grep -v '*\|!\|=' | head -n 1 | tr '\t' '\n' | grep . | wc -l | tr -d ' '
+    fi
+fi

@@ -1,0 +1,13 @@
+#!/bin/bash
+
+echo "Processing file..."
+
+
+
+cat $1 | head -n $(cat $1 | grep -n '=' | head -n 1 | cut -d ':' -f1)
+
+
+while IFS= read -r line
+do
+  echo "$line" | grep '!' 
+done < "$1"
