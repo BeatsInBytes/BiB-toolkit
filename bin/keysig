@@ -1,5 +1,8 @@
 #!/bin/bash
-usageMessage="keysig: usage: keysig [-isan] <inputfile>"
+
+# The usage message when errors are made
+usageMessage="ERROR: usage: keysig [-ains] <inputfile>"
+
 # Define the keysig function
 keySigFinder() {
    # $file $help $helpFull $interpretations $average
@@ -8,8 +11,17 @@ keySigFinder() {
       cat $dir/man/keysig
    else
       if [ -f $1 ]; then
-         echo got here
+
+         lineNum=$(cat $1 | grep 'k\[' | wc -l)
+
+         trackNum=$(cat $1 | grep 'k\[' | tr '\t' '\n' | wc -l)
+         echo $trackNum
          
+         for i in $(seq 1 $lineNum); do
+            cat $1 | grep 'k\[' | sed "${i}q;d" | tr '\t' '\n' | grep .
+            printf "\n"
+         done
+         echo $5
       else
          echo "keysig: ERROR: File '$1' does not exist"
          echo "$usageMessage"
@@ -31,12 +43,15 @@ argNum=$(echo "$allArgList" | grep . | wc -l)
 
 argListFirst=$(for i; do echo $i | grep ^- ; done)
 
-unrecogList=$(echo "$argListFirst" | grep -v -- '^-a$' | grep -v -- '^-h$')
-unrecogNum=$(echo "$unrecogList" | wc -l | tr -d ' ' )
+unrecogList=$(echo "$argListFirst" | grep -v -- '^-s$' | grep -v -- '^-a$' | grep -v -- '^-h$' | grep -v -- '^-i$' | grep -v -- '^--interpretations$' | grep -v -- '^--average$' | grep -v -- '^--scale-degree$' | grep -v -- '^--help$' | grep .)
+# 
+
+
+unrecogNum=$(echo "$unrecogList" | grep .  | wc -l | tr -d ' ' )
 
 if [ $unrecogNum -gt 0 ]; then
    echo "$usageMessage"
-
+   sleep .2
    echo "
 The following are not recoginzed options for the keysig program:"
    for i in $(seq 1 $unrecogNum); do
@@ -95,18 +110,22 @@ else
             helpFull=true
          fi
 
-         interpretations=$(echo $argList | tr ' ' '\n' | grep -- '-i')
-         if [ -z $interpretations ]; then 
-            interpretations=false
-         else
+         interpretations=$(echo $argList | tr ' ' '\n' | grep -- '^-i$')
+         interpretationsFull=$(echo $argList | tr ' ' '\n' | grep -- '^--interpretations$')
+
+         if [[ ! -z $interpretations ]] || [[ ! -z $interpretationsFull ]] ; then 
             interpretations=true
+         else
+            interpretations=false
          fi
 
-         average=$(echo $argList | tr ' ' '\n' | grep -- '-a')
-         if [ -z $average ]; then 
-            average=false
-         else
+         average=$(echo $argList | tr ' ' '\n' | grep -- '^-a$')
+         averageFull=$(echo $argList | tr ' ' '\n' | grep -- '^--average$')
+
+         if [[ ! -z $average ]] || [[ ! -z $averageFull ]]; then 
             average=true
+         else
+            average=false
          fi
 
          keySigFinder $file $help $helpFull $interpretations $average
