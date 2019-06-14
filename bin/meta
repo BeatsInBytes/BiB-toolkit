@@ -1,47 +1,70 @@
+#!/bin/bash
+
+# The usage message when errors are made
+#==========================================
+usageMessage="ERROR: usage: meta [-chnt] <inputfile>"
+
+# Read all the arguments and files input
+#==========================================
 argList=$(for i; do echo $i; done)
-
-opt=$(echo "$argList" | grep ^- | grep . | grep -v -- '^-c$')
-optNum=$(echo "$argList" | grep ^- | grep . | wc -l)
-
-if [ $optNum -gt 0 ]; then
-   echo "$usageMessage"
-   sleep .2
-   echo "
-The following are not recoginzed options for the keysig program:"
-   for i in $(seq 1 $optNum); do
-      printf "\t"
-      echo "$opt" | sed "${i}q;d"
-   done
-else
-    if [ $files -gt 1 ]; then
-        echo "keysig: ERROR: $files input files; only 1 supported"
-    else
-        cat $1 | grep -v '*\|!\|=' | head -n 1 | tr '\t' '\n' | grep . | wc -l | tr -d ' '
-    fi
-fi
-
-
 fileNum=$(echo "$argList" | grep -v '-' | grep . | wc -l | tr -d ' ')
-
 file=$(echo "$argList" | grep -v '-' | grep .)
 
-if [ $fileNum -gt 1 ]; then
-    echo "
-    meta: ERROR: $fileNum input files; only 1 supported
-"
-    exit 1;
-elif [ $fileNum -eq 0 ]; then
-    echo "
-    meta: ERROR: No input file specified
-"
-    exit 1;
-elif [ $fileNum -eq 1 ]; then
-    if [[ ! -f $file ]]; then
-    echo "
-    meta: ERROR: Input file '$file' not found.
-"        
-    exit 1
+# FILE ERROR HANDLING:
+#============================
+    if [ $fileNum -gt 1 ]; then
+        echo "
+        meta: ERROR: $fileNum input files; only 1 supported
+    "
+        exit 1;
+    elif [ $fileNum -eq 0 ]; then
+        echo "
+        meta: ERROR: No input file specified
+    "
+        exit 1;
+    elif [ $fileNum -eq 1 ]; then
+        if [[ ! -f $file ]]; then
+        echo "
+        meta: ERROR: Input file '$file' not found.
+    "        
+        exit 1
+        fi
     fi
+
+#ARG ERROR HANDLING:
+#============================
+singopt=$(echo "$argList" | grep -v -- '--' | grep ^- | grep . | tr -d '-' | grep . | grep -o .)
+singoptNum=$(echo "$singopt" | wc -l)
+
+singUnrec=$(echo "$singopt" | grep -v 'c\|h\|n\|t' | grep .)
+singUnrecNum=$(echo "$singUnrec" | grep . | wc -l | tr -d ' ')
+
+doub=$(echo "$argList" | grep -- '--' | grep . )
+doubNum=$(echo "$doub" | wc -l)
+
+if [[ ! -z "$doub" ]]; then
+    echo "$usageMessage"
+    echo "
+The following are not recoginzed options for the meta program:"
+    for i in $(seq 1 "$doubNum"); do
+        line=$(echo "$doub" | sed "${i}q;d")
+        printf "     "
+        echo ${line}
+    done
+    exit 1
 fi
 
-cat $1
+
+if [ -z "$singUnrec" ]; then
+    echo 'all set'
+else
+    echo "$usageMessage"
+    echo "
+The following are not recoginzed options for the meta program:"
+    for i in $(seq 1 "$singUnrecNum"); do
+        line=$(echo "$singUnrec" | sed "${i}q;d")
+        printf "   -"
+        echo ${line}
+    done
+    exit 1
+fi
