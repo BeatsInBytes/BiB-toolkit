@@ -4,11 +4,25 @@ argList=$(for i; do echo $i; done)
 
 fileNum=$(echo "$argList" | grep -v '-' | grep . | wc -l | tr -d ' ')
 
+file=$(echo "$argList" | grep -v '-' | grep .)
+
 if [ $fileNum -gt 1 ]; then
     echo "
     keysig: ERROR: $fileNum input files; only 1 supported
 "
     exit 1;
+elif [ $fileNum -eq 0 ]; then
+    echo "
+    keysig: ERROR: No input file specified
+"
+    exit 1;
+elif [ $fileNum -eq 1 ]; then
+    if [[ ! -f $file ]]; then
+    echo "
+    keysig: ERROR: Input file '$file' not found.
+"        
+    exit 1
+    fi
 fi
 
 header=$(cat $1 | head -n $(cat $1 | grep -n '=' | head -n 1 | cut -d ':' -f1) | sed -e s/**kern/**scale-deg/ )
