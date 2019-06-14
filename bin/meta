@@ -10,6 +10,164 @@ argList=$(for i; do echo $i; done)
 fileNum=$(echo "$argList" | grep -v '-' | grep . | wc -l | tr -d ' ')
 file=$(echo "$argList" | grep -v '-' | grep .)
 
+# DEFINE SEARCHING FUNCTIONS
+#============================
+
+search() {
+    if [ $3 == 'true' ]; then
+        dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+        cat $dir/man/meta
+        exit 0
+    fi
+
+    if [ $2 == 'true' ]; then
+        composerSearch $1
+    fi
+
+    if [ $4 == 'true' ]; then
+        nameSearch $1
+    fi
+
+    if [ $5 == 'true' ]; then
+        timeSearch $1
+    fi
+
+    if [ $2 == 'false' ] && [ $3 == 'false' ] && [ $4 == 'false' ] && [ $5 == 'false' ]; then
+        composerSearch $1
+        # nameSearch $1
+        timeSearch $1
+    fi
+}
+
+composerSearch(){
+    com=$(cat $1 | grep "!!!COM" | cut -d ':' -f2)
+    processedCom=$(echo $com | tr ',' '\n' | perl -p -e 's/^ *//')
+    printf "Composer:\t$(echo "$processedCom" | tail -n 1) $(echo "$processedCom" | head -n 1)\n"
+}
+
+nameSearch(){
+    com=$(cat $1 | grep "!!!COM" | cut -d ':' -f2)
+    processedCom=$(echo $com | tr ',' '\n' | perl -p -e 's/^ *//')
+    echo "Composer: $(echo "$processedCom" | tail -n 1) $(echo "$processedCom" | head -n 1)"
+
+}
+
+timeSearch(){
+    time=$(cat $1 | grep "!!!CDT" | cut -d ':' -f2)
+
+    time1=$(echo $time | cut -d '-' -f1)
+
+    year1=$(echo $time1 | cut -d '/' -f1)
+    month1=$(echo $time1 | cut -d '/' -f2)
+    day1=$(echo $time1 | cut -d '/' -f3)
+
+    if [ -z $year1 ]; then
+        date1="[None]"
+    else
+        if [[ ! -z "$day1" ]]; then
+            day1=$(echo "$day1, ")
+        else
+            day1=""
+        fi
+
+        if [[ ! -z $month1 ]]; then
+            if [ $month1 -eq 1 ]; then
+                month1="January "
+            elif [ $month1 -eq 2 ]; then
+                month1="February "
+            elif [ $month1 -eq 3 ]; then
+                month1="March "
+            elif [ $month1 -eq 4 ]; then
+                month1="April " 
+            elif [ $month1 -eq 5 ]; then
+                month1="May " 
+            elif [ $month1 -eq 6 ]; then
+                month1="June " 
+            elif [ $month1 -eq 7 ]; then
+                month1="July " 
+            elif [ $month1 -eq 8 ]; then
+                month1="August " 
+            elif [ $month1 -eq 9 ]; then
+                month1="September " 
+            elif [ $month1 -eq 10 ]; then
+                month1="October " 
+            elif [ $month1 -eq 11 ]; then
+                month1="November " 
+            elif [ $month1 -eq 12 ]; then
+                month1="December " 
+            fi  
+        fi
+
+
+        if [ -z $month1 ]; then
+            if [ -z $year1 ]; then
+                date1="[None]"
+            else
+                date1="$year1"
+            fi
+        else
+            date1="$month1$day1$year1"
+        fi
+    fi
+
+    time2=$(echo $time | cut -d '-' -f2)
+
+    year2=$(echo $time2 | cut -d '/' -f1)
+    month2=$(echo $time2 | cut -d '/' -f2)
+    day2=$(echo $time2 | cut -d '/' -f3)
+
+    if [ -z $year2 ]; then
+        date2="[None]"
+    else
+        if [[ ! -z "$day2" ]]; then
+            day2=$(echo "$day2, ")
+        else
+            day2=""
+        fi
+
+        if [[ ! -z $month2 ]]; then
+            if [ $month2 -eq 1 ]; then
+                month2="January "
+            elif [ $month2 -eq 2 ]; then
+                month2="February "
+            elif [ $month2 -eq 3 ]; then
+                month2="March "
+            elif [ $month2 -eq 4 ]; then
+                month2="April " 
+            elif [ $month2 -eq 5 ]; then
+                month2="May " 
+            elif [ $month2 -eq 6 ]; then
+                month2="June " 
+            elif [ $month2 -eq 7 ]; then
+                month2="July " 
+            elif [ $month2 -eq 8 ]; then
+                month2="August " 
+            elif [ $month2 -eq 9 ]; then
+                month2="September " 
+            elif [ $month2 -eq 10 ]; then
+                month2="October " 
+            elif [ $month2 -eq 11 ]; then
+                month2="November " 
+            elif [ $month2 -eq 12 ]; then
+                month2="December " 
+            fi  
+        fi
+
+
+        if [ -z $month2 ]; then
+            if [ -z $year2 ]; then
+                date2="[None]"
+            else
+                date2="$year2"
+            fi
+        else
+            date2="$month2$day2$year2"
+        fi
+    fi
+    printf "Composer Date:\t$date1 - $date2\n"
+
+}
+
 # FILE ERROR HANDLING:
 #============================
     if [ $fileNum -gt 1 ]; then
@@ -56,7 +214,36 @@ fi
 
 
 if [ -z "$singUnrec" ]; then
-    echo 'all set'
+    cOpt=$(echo "$singopt" | grep 'c')
+    if [ -z "$cOpt" ]; then
+        cOpt='false'
+    else
+        cOpt='true'
+    fi
+
+    hOpt=$(echo "$singopt" | grep 'h')
+    if [ -z "$hOpt" ]; then
+        hOpt='false'
+    else
+        hOpt='true'
+    fi
+
+    nOpt=$(echo "$singopt" | grep 'n')
+    if [ -z "$nOpt" ]; then
+        nOpt='false'
+    else
+        nOpt='true'
+    fi
+
+    tOpt=$(echo "$singopt" | grep 't')
+    if [ -z "$tOpt" ]; then
+        tOpt='false'
+    else
+        tOpt='true'
+    fi
+
+    search $file $cOpt $hOpt $nOpt $tOpt
+
 else
     echo "$usageMessage"
     echo "
