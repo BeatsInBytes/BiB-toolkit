@@ -1,0 +1,15 @@
+
+META(1)
+
+NAME
+    meta - finds metadata in a music file
+
+SYNOPSIS
+    meta [-chnt] file...
+
+DESCRIPTION
+    Finds information (if present) about a kern file, such as composer or name
+
+OPTIONS
+
+META(1)

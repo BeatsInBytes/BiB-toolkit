@@ -1,0 +1,26 @@
+argList=$(for i; do echo $i; done)
+
+fileNum=$(echo "$argList" | grep -v '-' | grep . | wc -l | tr -d ' ')
+
+file=$(echo "$argList" | grep -v '-' | grep .)
+
+if [ $fileNum -gt 1 ]; then
+    echo "
+    meta: ERROR: $fileNum input files; only 1 supported
+"
+    exit 1;
+elif [ $fileNum -eq 0 ]; then
+    echo "
+    meta: ERROR: No input file specified
+"
+    exit 1;
+elif [ $fileNum -eq 1 ]; then
+    if [[ ! -f $file ]]; then
+    echo "
+    meta: ERROR: Input file '$file' not found.
+"        
+    exit 1
+    fi
+fi
+
+cat $1
