@@ -1,13 +1,35 @@
 #!/bin/bash
 
-echo "Processing file..."
+argList=$(for i; do echo $i; done)
 
+fileNum=$(echo "$argList" | grep -v '-' | grep . | wc -l | tr -d ' ')
 
+if [ $fileNum -gt 1 ]; then
+    echo "
+    keysig: ERROR: $fileNum input files; only 1 supported
+"
+    exit 1;
+fi
 
-cat $1 | head -n $(cat $1 | grep -n '=' | head -n 1 | cut -d ':' -f1)
+header=$(cat $1 | head -n $(cat $1 | grep -n '=' | head -n 1 | cut -d ':' -f1))
 
+tailNum=$(echo "$(cat $1 | wc -l)-$(cat $1 | grep -n '*-' | head -n 1 | cut -d ':' -f1)" | bc)
+footer=$(cat $1 | tail -n $tailNum)
 
-while IFS= read -r line
-do
-  echo "$line" | grep '!' 
-done < "$1"
+# while IFS= read -r line
+# do
+#   echo "$line" | grep '!\|*' 
+# done < "$1"
+content=$(cat $1 | head -n $(cat $1 | grep -n '*-' | head -n 1 | cut -d ':' -f1) | tail -n +$(cat $1 | grep -n '=' | head -n 1 | cut -d ':' -f1))
+
+tracknum=$(tracknum $1)
+for i in $(seq $tracknum); do
+    line=$(echo "$content" | tr '\t' '~' | cut -d '~' -f$i)
+    while IFS= read -r subline; do
+        echo $subline
+    done <<< "$line"
+done
+
+# echo "$header
+# CONTENT
+# $footer"
