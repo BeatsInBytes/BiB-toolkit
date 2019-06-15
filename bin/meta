@@ -2,11 +2,12 @@
 
 # The usage message when errors are made
 #==========================================
-usageMessage="ERROR: usage: meta [-chnt] <inputfile>"
+usageMessage="ERROR: usage: meta [-cdhnt] <inputfile>"
 
 # Read all the arguments and files input
 #==========================================
-argList=$(for i; do echo $i; done)
+argList=$(echo "$@" | tr ' ' '\n')
+
 fileNum=$(echo "$argList" | grep -v '-' | grep . | wc -l | tr -d ' ')
 file=$(echo "$argList" | grep -v '-' | grep .)
 
@@ -32,23 +33,116 @@ search() {
         timeSearch $1
     fi
 
-    if [ $2 == 'false' ] && [ $3 == 'false' ] && [ $4 == 'false' ] && [ $5 == 'false' ]; then
-        composerSearch $1
-        # nameSearch $1
-        timeSearch $1
+    if [ $6 == 'true' ]; then
+        dateSearch $1
     fi
+
+    if [ $2 == 'false' ] && [ $3 == 'false' ] && [ $4 == 'false' ] && [ $5 == 'false' ] && [ $6 == 'false' ]; then
+        composerSearch $1
+        nameSearch $1
+        timeSearch $1
+        dateSearch $1
+    fi
+}
+
+dateSearch() {
+    date=$(cat $1 | grep '!!ODT' | cut -d ':' -f2 | cut -d ',' -f1 | cut -d '-' -f1)
+    if [ -z $date ]; then
+        date1="[None]"
+    else
+        year1=$(echo $date | cut -d '/' -f1)
+        month1=$(echo $date | cut -d '/' -f2)
+        day1=$(echo $date | cut -d '/' -f3)
+
+        if [ -z $year1 ]; then
+            date1="[None]"
+        else
+            if [[ ! -z "$day1" ]]; then
+                day1=$(echo "$day1, ")
+            else
+                day1=""
+            fi
+
+            if [[ ! -z $month1 ]]; then
+                if [ $month1 -eq 1 ]; then
+                    month1="January "
+                elif [ $month1 -eq 2 ]; then
+                    month1="February "
+                elif [ $month1 -eq 3 ]; then
+                    month1="March "
+                elif [ $month1 -eq 4 ]; then
+                    month1="April " 
+                elif [ $month1 -eq 5 ]; then
+                    month1="May " 
+                elif [ $month1 -eq 6 ]; then
+                    month1="June " 
+                elif [ $month1 -eq 7 ]; then
+                    month1="July " 
+                elif [ $month1 -eq 8 ]; then
+                    month1="August " 
+                elif [ $month1 -eq 9 ]; then
+                    month1="September " 
+                elif [ $month1 -eq 10 ]; then
+                    month1="October " 
+                elif [ $month1 -eq 11 ]; then
+                    month1="November " 
+                elif [ $month1 -eq 12 ]; then
+                    month1="December " 
+                fi  
+            fi
+
+
+            if [ -z $month1 ]; then
+                if [ -z $year1 ]; then
+                    date1="[None]"
+                else
+                    date1="$year1"
+                fi
+            else
+                date1="$month1$day1$year1"
+            fi
+        fi
+
+    fi
+    printf "Date Written:\t$date1\n"
 }
 
 composerSearch(){
     com=$(cat $1 | grep "!!!COM" | cut -d ':' -f2)
     processedCom=$(echo $com | tr ',' '\n' | perl -p -e 's/^ *//')
-    printf "Composer:\t$(echo "$processedCom" | tail -n 1) $(echo "$processedCom" | head -n 1)\n"
+    arranged=$(echo $(echo "$processedCom" | tail -n 1) $(echo "$processedCom" | head -n 1))
+    if [ -z "$arranged" ]; then
+        printf "Composer:\tNone Found\n"
+    else
+        printf "Composer:\t$arranged\n"
+    fi
 }
 
 nameSearch(){
-    com=$(cat $1 | grep "!!!COM" | cut -d ':' -f2)
-    processedCom=$(echo $com | tr ',' '\n' | perl -p -e 's/^ *//')
-    echo "Composer: $(echo "$processedCom" | tail -n 1) $(echo "$processedCom" | head -n 1)"
+    com=$(cat $1 | grep "!!!OTL:" | cut -d ':' -f2 | perl -p -e 's/^ *//')
+    mvmt=$(cat $1 | grep "!!!OMV:" | cut -d ':' -f2 | sed 's/[^0-9]*//g' )
+    mvmtTitle=$(cat $1 | grep "!!!OMD:" | cut -d ':' -f2 | perl -p -e 's/^ *//') 
+
+    if [ -z "$com" ]; then
+        result='[None]'
+    else
+        if [ -z "$mvmt" ]; then
+            if [[ ! -z "$mvmtTitle" ]]; then
+                result="$com: $mvmtTitle"
+            else
+                result=$com
+            fi
+        else
+            if [ -z "$mvmtTitle" ]; then
+                result=$com
+            else
+                result="$com, Movement $mvmt: $mvmtTitle"
+            fi
+        fi
+    fi
+    # mvmtTitle=$(echo ": $mvmtTitle")
+    printf "Song Title:\t$result\n"
+    # echo "$com, Movement $mvmt: $mvmtTitle"
 
 }
 
@@ -191,10 +285,10 @@ timeSearch(){
 
 #ARG ERROR HANDLING:
 #============================
-singopt=$(echo "$argList" | grep -v -- '--' | grep ^- | grep . | tr -d '-' | grep . | grep -o .)
+singopt=$(echo "$argList" | grep -v -- '--' | grep ^- | grep . | tr -d '-' | grep -o .)
 singoptNum=$(echo "$singopt" | wc -l)
 
-singUnrec=$(echo "$singopt" | grep -v 'c\|h\|n\|t' | grep .)
+singUnrec=$(echo "$singopt" | grep -v 'c\|h\|n\|t\|d' | grep .)
 singUnrecNum=$(echo "$singUnrec" | grep . | wc -l | tr -d ' ')
 
 doub=$(echo "$argList" | grep -- '--' | grep . )
@@ -229,6 +323,7 @@ if [ -z "$singUnrec" ]; then
     fi
 
     nOpt=$(echo "$singopt" | grep 'n')
+
     if [ -z "$nOpt" ]; then
         nOpt='false'
     else
@@ -242,7 +337,14 @@ if [ -z "$singUnrec" ]; then
         tOpt='true'
     fi
 
-    search $file $cOpt $hOpt $nOpt $tOpt
+    dOpt=$(echo "$singopt" | grep 'd')
+    if [ -z "$dOpt" ]; then
+        dOpt='false'
+    else
+        dOpt='true'
+    fi
+
+    search $file $cOpt $hOpt $nOpt $tOpt $dOpt
 
 else
     echo "$usageMessage"
