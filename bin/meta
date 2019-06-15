@@ -2,12 +2,11 @@
 
 # The usage message when errors are made
 #==========================================
-usageMessage="ERROR: usage: meta [-cdhnt] <inputfile>"
+usageMessage="ERROR: usage: meta [-cdhty] <inputfile>"
 
 # Read all the arguments and files input
 #==========================================
 argList=$(echo "$@" | tr ' ' '\n')
-
 fileNum=$(echo "$argList" | grep -v '-' | grep . | wc -l | tr -d ' ')
 file=$(echo "$argList" | grep -v '-' | grep .)
 
@@ -112,7 +111,7 @@ composerSearch(){
     processedCom=$(echo $com | tr ',' '\n' | perl -p -e 's/^ *//')
     arranged=$(echo $(echo "$processedCom" | tail -n 1) $(echo "$processedCom" | head -n 1))
     if [ -z "$arranged" ]; then
-        printf "Composer:\tNone Found\n"
+        printf "Composer:\t[None]\n"
     else
         printf "Composer:\t$arranged\n"
     fi
@@ -300,7 +299,7 @@ timeSearch(){
 singopt=$(echo "$argList" | grep -v -- '--' | grep ^- | grep . | tr -d '-' | grep -o .)
 singoptNum=$(echo "$singopt" | wc -l)
 
-singUnrec=$(echo "$singopt" | grep -v 'c\|h\|n\|t\|d' | grep .)
+singUnrec=$(echo "$singopt" | grep -v 'c\|h\|t\|y\|d' | grep .)
 singUnrecNum=$(echo "$singUnrec" | grep . | wc -l | tr -d ' ')
 
 doub=$(echo "$argList" | grep -- '--' | grep . )
@@ -334,7 +333,7 @@ if [ -z "$singUnrec" ]; then
         hOpt='true'
     fi
 
-    nOpt=$(echo "$singopt" | grep 'n')
+    nOpt=$(echo "$singopt" | grep 't')
 
     if [ -z "$nOpt" ]; then
         nOpt='false'
@@ -342,7 +341,7 @@ if [ -z "$singUnrec" ]; then
         nOpt='true'
     fi
 
-    tOpt=$(echo "$singopt" | grep 't')
+    tOpt=$(echo "$singopt" | grep 'y')
     if [ -z "$tOpt" ]; then
         tOpt='false'
     else

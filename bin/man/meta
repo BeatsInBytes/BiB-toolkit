@@ -5,7 +5,7 @@ NAME
     meta - finds metadata in a music file
 
 SYNOPSIS
-    meta [-cdhnt] file...
+    meta [-cdhty] file...
 
 DESCRIPTION
     Finds information (if present) about a kern file, such as composer or name
