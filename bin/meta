@@ -265,18 +265,21 @@ timeSearch(){
 # FILE ERROR HANDLING:
 #============================
     if [ $fileNum -gt 1 ]; then
-        echo "
+        echo "$usageMessage
+
         meta: ERROR: $fileNum input files; only 1 supported
     "
         exit 1;
     elif [ $fileNum -eq 0 ]; then
-        echo "
+        echo "$usageMessage
+
         meta: ERROR: No input file specified
     "
         exit 1;
     elif [ $fileNum -eq 1 ]; then
         if [[ ! -f $file ]]; then
-        echo "
+        echo "$usageMessage
+        
         meta: ERROR: Input file '$file' not found.
     "        
         exit 1
