@@ -271,11 +271,20 @@ timeSearch(){
     "
         exit 1;
     elif [ $fileNum -eq 0 ]; then
-        echo "$usageMessage
+        singopt=$(echo "$argList" | grep -v -- '--' | grep ^- | grep . | tr -d '-' | grep -o .)
+        hOpt=$(echo "$singopt" | grep 'h' | grep . | wc -l)
+        if [ $hOpt -eq 0 ]; then
+
+            echo "$usageMessage
 
         meta: ERROR: No input file specified
-    "
-        exit 1;
+        "
+            exit 1;
+        else
+            dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+            cat $dir/man/meta
+            exit 0
+        fi
     elif [ $fileNum -eq 1 ]; then
         if [[ ! -f $file ]]; then
         echo "$usageMessage
