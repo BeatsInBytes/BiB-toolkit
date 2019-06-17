@@ -2,13 +2,14 @@
 
 # The usage message when errors are made
 #==========================================
-usageMessage="ERROR: usage: meta [-cdhty] <inputfile>"
+usageMessage="ERROR: usage: meta [-cdhty] <inputfile>
+See 'meta -h' for help"
 
 # Read all the arguments and files input
 #==========================================
 argList=$(echo "$@" | tr ' ' '\n')
-fileNum=$(echo "$argList" | grep -v '-' | grep . | wc -l | tr -d ' ')
-file=$(echo "$argList" | grep -v '-' | grep .)
+fileNum=$(echo "$argList" | grep -v -- '^-' | grep . | wc -l | tr -d ' ')
+file=$(echo "$argList" | grep -v -- '^-' | grep .)
 
 # DEFINE SEARCHING FUNCTIONS
 #============================
@@ -16,7 +17,7 @@ file=$(echo "$argList" | grep -v '-' | grep .)
 search() {
     if [ $3 == 'true' ]; then
         dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-        cat $dir/man/meta
+        cat $dir/man/meta | less
         exit 0
     fi
 
@@ -281,7 +282,7 @@ timeSearch(){
             exit 1;
         else
             dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-            cat $dir/man/meta
+            cat $dir/man/meta | less
             exit 0
         fi
     elif [ $fileNum -eq 1 ]; then
