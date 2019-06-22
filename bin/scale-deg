@@ -1,5 +1,7 @@
 #!/bin/bash
 
+usageMessage="scale-deg: Usage: "
+
 argList=$(for i; do echo $i; done)
 
 fileNum=$(echo "$argList" | grep -v '-' | grep . | wc -l | tr -d ' ')
@@ -30,26 +32,13 @@ header=$(cat $1 | head -n $(cat $1 | grep -n '=' | head -n 1 | cut -d ':' -f1) |
 tailNum=$(echo "$(cat $1 | wc -l)-$(cat $1 | grep -n '*-' | head -n 1 | cut -d ':' -f1)" | bc)
 footer=$(cat $1 | tail -n $tailNum)
 
-# while IFS= read -r line
-# do
-#   echo "$line" | grep '!\|*' 
-# done < "$1"
 content=$(cat $1 | head -n $(cat $1 | grep -n '*-' | head -n 1 | cut -d ':' -f1) | tail -n +$(cat $1 | grep -n '=' | head -n 1 | cut -d ':' -f1) | grep -v '*\|!')
-
+echo "$header"
 tracknum=$(tracknum $1)
 for i in $(seq $tracknum); do
-    line=$(echo "$content" | tr '\t' '~' | cut -d '~' -f$i | tr -d '(\|)\|[\|]')
-    while IFS= read -r subline; do
-        if [ -z "$subline" ]; then
-            echo "EMPTY"
-        else
-            if [ "$subline" == '.' ]; then
-                echo "dot"
-            else
-                echo $subline
-            fi
-        fi
-    done <<< "$line"
+    track=$(echo "$content" | tr '\t' '~' | cut -d '~' -f$i | tr -d '(\|)\|[\|]')
+    rhythm=$(echo "$track" | sed 's/[^0-9]*/ /g' | perl -p -e 's/^ *//' | sed -e 's/ /|~/g' | sed -e 's/^$/./')
+    echo "$rhythm"
 done
 
 # echo "$header
