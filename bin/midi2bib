@@ -1,0 +1,7 @@
+#!/bin/bash
+
+readBinary() {
+    xxd -b "$1"
+}
+
+readBinary "$1"
