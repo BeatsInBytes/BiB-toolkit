@@ -87,9 +87,9 @@ The following are not recoginzed options for the keysig program:"
    exit 1
 else
 
-   if [ $argNum -eq 0 ]; then
-      echo "$usageMessage"
-   else
+   # if [ $argNum -eq 0 ]; then
+   #    echo "$usageMessage"
+   # else
       # File number handling
       if [ $numFile -eq '0' ]; then
          argList=$(for i; do echo $i | grep ^- ; done)
@@ -107,11 +107,11 @@ else
          else
             helpFull=true
          fi
-
          if [ $help == 'true' ] || [ $helpFull == 'true' ]; then
             dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
             cat $dir/man/keysig
          else
+         echo "$usageMessage"
                echo "   
          keysig: ERROR: No input file specified
          "
@@ -157,5 +157,5 @@ else
 
          keySigFinder $file $help $helpFull $interpretations $average
       fi
-   fi
+   # fi
 fi
