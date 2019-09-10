@@ -3,3 +3,6 @@
 
 # For the test kern files
 test-kern/
+
+# For old code
+legacy/
