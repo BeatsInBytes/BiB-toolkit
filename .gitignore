@@ -1,8 +1,5 @@
 #For .DS_Store
 .DS_Store
-
-# For the test kern files
 test-kern/
-
-# For old code
 legacy/
+bin/
