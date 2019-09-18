@@ -1,5 +1,7 @@
 #include <iostream>
 #include "../include/kern.hpp"
+#include <fstream>
+#include <sstream>
 
 using namespace std;
 
@@ -8,6 +10,10 @@ void Kern::meta() {
 }
 
 Kern::Kern(string path) {
-    // file_path = path;
-    cout << path << endl;
+    file_path = path;
+
+    ifstream t(file_path);
+    stringstream buffer;
+    buffer << t.rdbuf();
+    cout << buffer.str() << endl;
 }
