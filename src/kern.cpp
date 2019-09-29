@@ -27,6 +27,21 @@ string grep(string content, string key, char type) {
     return returnStr;
 }
 
+void replace(string str, string from, string to) {
+    size_t start_pos = 0;
+    while((start_pos = str.find(from, start_pos)) != string::npos) {
+        str.replace(start_pos, from.length(), to);
+        start_pos += to.length(); // In case 'to' contains 'from', like replacing 'x' with 'yx'
+    }
+}
+
+// Kern functions:
+
+string numList(string song) {
+    string remove = grep(grep(grep(song, "!", 'v'), "*", 'v'), "=", 'v');
+    cout << remove << endl;
+}
+
 // KERN METHODS:
 //========================
 Kern::Kern(string path) {
@@ -51,14 +66,13 @@ map<string, string> Kern::meta() {
 
         composer = grep(metaText, "COM:", 'n');
         composer = composer.substr(8,composer.size());
-        
+
         lastName = composer.substr(0, composer.find(","));
         firstName = composer.erase(0, composer.find(",") + 2);
         composerName = firstName.substr(0,firstName.size() - 1) + " " + lastName;
 
         meta.insert({"composer", composerName});
     }
-    
     
     return meta;
 }
@@ -68,21 +82,51 @@ string Kern::getContents() {
 }
 
 vector<int> Kern::themes() {
+    vector<int> themes;
+    return themes;
+}
 
+string Kern::keySig() {
+    string found = grep(contents, "*k[", 'n');
+
+    if ( found == "" ) {
+        // try key interpretations
+    }
+    else {
+        replace(found, " ", "t");
+    }
+    return found;
 }
 
 vector<int> Kern::scales() {
-
+    vector<int> scales;
+    return scales;
 }        
 
 map<int,float> Kern::pitchDist() {
-
+    map<int,float> pitchDist;
+    return pitchDist;
 }
 
 map<int, float> Kern::rhythmDist() {
-
+    map<int,float> rhythmDist;
+    return rhythmDist;
 }
 
-int Kern::tracknum() {
+int Kern::trackNum() {
+    int trackNum;
+    return trackNum;
+}
 
+string Kern::analyze() {
+    // perform full analysis
+    string returnstr;
+    // cout << numList(contents) << endl;
+    //meta:
+    map<string, string> meta = Kern::meta();
+    returnstr += "Composer:\t" + meta["composer"] + "\n";
+    
+    returnstr += "Key signature:\t" + keySig();
+    //finished
+    return returnstr;
 }
