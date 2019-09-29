@@ -1,5 +1,6 @@
 #include <string>
 #include <vector>
+#include <map>
 
 using namespace std;
     
@@ -9,9 +10,16 @@ class Kern {
     string file_path;
     string contents;
 
-public:
-    
-    Kern(string path);
+    public:
+        
+        Kern(string path);
 
-    void meta();
+        // Data fetch methods
+        string getContents();
+
+        // aata add methods
+        map<string, string> meta();
+        vector<int> themes(), scales();
+        map<int, float> pitchDist(), rhythmDist();
+
 };
