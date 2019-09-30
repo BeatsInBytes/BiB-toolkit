@@ -11,14 +11,13 @@ bool file_exists(const std::string& name) {
     return false;
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char * argv[]) {
     vector<string> fileList;
 
     string usage = "BiB: usage: bib [options] infile ...";
 
     for ( int i = 1; i < argc; i++ ) {
         if ( file_exists(argv[i]) ) {
-            cout << argv[i] << " is a file" << endl;
             fileList.push_back(argv[i]);
         }
     }
@@ -30,6 +29,8 @@ int main(int argc, char *argv[]) {
     for ( int i = 0; i < fileList.size(); i++) {
         string filepath = fileList[i];
         Kern kern(filepath);
-    }
 
+        cout << kern.analyze() << endl;
+        // cout << kern.getContents() << endl;
+    }
 }
