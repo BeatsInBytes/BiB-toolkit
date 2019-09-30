@@ -7,7 +7,6 @@ using namespace std;
 
 // GENERAL TEXT PROCESSING:
 //========================
-
 string grep(string content, string key, char type) {
     stringstream f(content);
     string line;
@@ -31,15 +30,40 @@ void replace(string str, string from, string to) {
     size_t start_pos = 0;
     while((start_pos = str.find(from, start_pos)) != string::npos) {
         str.replace(start_pos, from.length(), to);
-        start_pos += to.length(); // In case 'to' contains 'from', like replacing 'x' with 'yx'
+        start_pos += to.length();
     }
 }
 
 // Kern functions:
-
 string numList(string song) {
-    string remove = grep(grep(grep(song, "!", 'v'), "*", 'v'), "=", 'v');
-    cout << remove << endl;
+
+    string numlist, remove;
+    remove = grep(grep(grep(song, "!", 'v'), "*", 'v'), "=", 'v');
+    stringstream f(remove);
+    string line;    
+    while (getline(f, line)) {
+        line = string(line);
+        string newline;
+        // cout << line << endl;
+        // cout << line.length() << endl;
+        for ( int i = 0; i < line.length(); i++ ) {
+            char character = line[i];
+            if (isdigit(character)) {
+                newline += character;
+            }
+            else if ( character == '\t' ) {
+                newline += "\t";
+            }
+            else if ( character == ' ' ) {
+                newline += " ";
+            }
+        }
+        if ( newline != "" ) {
+            numlist += newline + "\n";
+        }
+    }
+
+    return numlist;
 }
 
 // KERN METHODS:
@@ -121,12 +145,13 @@ int Kern::trackNum() {
 string Kern::analyze() {
     // perform full analysis
     string returnstr;
-    // cout << numList(contents) << endl;
+    cout << numList(contents);
     //meta:
-    map<string, string> meta = Kern::meta();
-    returnstr += "Composer:\t" + meta["composer"] + "\n";
-    
-    returnstr += "Key signature:\t" + keySig();
+    // map<string, string> meta = Kern::meta();
+
+    // returnstr += "Composer:\t" + meta["composer"] + "\n";    
+    // returnstr += "Key signature:\t" + keySig();
+
     //finished
     return returnstr;
 }
