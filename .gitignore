@@ -1,5 +1,6 @@
-#For .DS_Store
 .DS_Store
+
 test-kern/
 legacy/
 bin/
+.vscode/

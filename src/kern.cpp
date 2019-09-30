@@ -139,6 +139,13 @@ map<int, float> Kern::rhythmDist() {
 
 int Kern::trackNum() {
     int trackNum;
+
+    string line;
+    string modified = grep(grep(grep(contents,"!",'v'), "*", 'v'), "=", 'n');
+    stringstream f(modified);
+    getline(f,line);
+    cout << string(line).count('=') << endl;
+
     return trackNum;
 }
 
@@ -146,6 +153,7 @@ string Kern::analyze() {
     // perform full analysis
     string returnstr;
     cout << numList(contents);
+    trackNum();
     //meta:
     // map<string, string> meta = Kern::meta();
 
