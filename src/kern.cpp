@@ -2,6 +2,7 @@
 #include "../include/kern.hpp"
 #include <fstream>
 #include <sstream>
+#include <vector>
 
 using namespace std;
 
@@ -35,7 +36,7 @@ void replace(string str, string from, string to) {
 }
 
 // Kern functions:
-string numList(string song) {
+string numList(string song, bool format) {
 
     string numlist, remove;
     remove = grep(grep(grep(song, "!", 'v'), "*", 'v'), "=", 'v');
@@ -48,17 +49,22 @@ string numList(string song) {
         // cout << line.length() << endl;
         for ( int i = 0; i < line.length(); i++ ) {
             char character = line[i];
-            if (isdigit(character)) {
+            if (isdigit(character) && format) {
                 newline += character;
             }
-            else if ( character == '\t' ) {
+            else if ( character == '\t' && format) {
                 newline += "\t";
             }
-            else if ( character == ' ' ) {
+            else if ( character == ' ' && format ) {
                 newline += " ";
             }
+            else if (!(format) && isdigit(character) ) {
+                numlist += character;
+                numlist += "\n";
+                // newline += "\n";
+            }
         }
-        if ( newline != "" ) {
+        if ( newline != "" && format ) {
             numlist += newline + "\n";
         }
     }
@@ -69,11 +75,16 @@ string numList(string song) {
 // KERN METHODS:
 //========================
 Kern::Kern(string path) {
+    // Read file
     file_path = path;
     ifstream t(file_path);
     stringstream buffer;
     buffer << t.rdbuf();
     contents = buffer.str();
+
+    numTrack = trackNum(contents);
+    rhythm = numList(contents, true);
+
 }
 
 map<string, string> Kern::meta() {
@@ -134,32 +145,47 @@ map<int,float> Kern::pitchDist() {
 
 map<int, float> Kern::rhythmDist() {
     map<int,float> rhythmDist;
+
+    vector<int> rhythmList;
+
+    string list = numList(contents, false);
+    string line;
+
+    stringstream f(list);
+
+    while (getline(f, line)) {
+        rhythmList.push_back(stoi(line));
+    }
+
+    count(rhythmList.begin(), rhythmList.end(), 1); 
+
     return rhythmDist;
 }
 
-int Kern::trackNum() {
-    int trackNum;
+int Kern::trackNum(string file) {
 
     string line;
-    string modified = grep(grep(grep(contents,"!",'v'), "*", 'v'), "=", 'n');
+    string modified = grep(grep(grep(file,"!",'v'), "*", 'v'), "=", 'n');
     stringstream f(modified);
     getline(f,line);
-    cout << string(line).count('=') << endl;
 
-    return trackNum;
+    return count(line.begin(), line.end(), '=');
 }
 
 string Kern::analyze() {
-    // perform full analysis
+
     string returnstr;
-    cout << numList(contents);
-    trackNum();
+
     //meta:
-    // map<string, string> meta = Kern::meta();
+    //==============================
+    map<string, string> meta = Kern::meta();
+    string composer = meta["composer"];
 
-    // returnstr += "Composer:\t" + meta["composer"] + "\n";    
-    // returnstr += "Key signature:\t" + keySig();
-
+    returnstr += "Composer:\t" + composer + "\n";    
+    
+    //scales:
+    //================================
+    
     //finished
     return returnstr;
 }
