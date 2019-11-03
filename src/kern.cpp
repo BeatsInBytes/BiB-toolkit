@@ -93,20 +93,27 @@ map<string, string> Kern::meta() {
     string metaText = grep(contents, "!!!", 'n');
 
     if ( metaText == "" ) {
-        cout << "No meta information available";
         //throw error
+        meta.insert({"composer", "\e[31mnull\e[0m"});
+
     }
     else {
+        // NEED TO ADD CHECK HERE
         string lastName, firstName, composerName, composer;
 
         composer = grep(metaText, "COM:", 'n');
-        composer = composer.substr(8,composer.size());
+        if ( composer == "" ) {
+            meta.insert({"composer", "\e[31mnull\e[0m"});
+        }
+        else {
+            composer = composer.substr(8,composer.size());
 
-        lastName = composer.substr(0, composer.find(","));
-        firstName = composer.erase(0, composer.find(",") + 2);
-        composerName = firstName.substr(0,firstName.size() - 1) + " " + lastName;
+            lastName = composer.substr(0, composer.find(","));
+            firstName = composer.erase(0, composer.find(",") + 2);
+            composerName = firstName.substr(0,firstName.size() - 1) + " " + lastName;
 
-        meta.insert({"composer", composerName});
+            meta.insert({"composer", composerName});
+        }
     }
     
     return meta;
@@ -157,7 +164,10 @@ map<int, float> Kern::rhythmDist() {
         rhythmList.push_back(stoi(line));
     }
 
-    count(rhythmList.begin(), rhythmList.end(), 1); 
+    for ( int i = 1; i <= 64; i *= 2 ) {
+        float num = (float) count(rhythmList.begin(), rhythmList.end(), i) / (float) rhythmList.size();
+        rhythmDist[i] = num; 
+    }
 
     return rhythmDist;
 }
@@ -181,11 +191,19 @@ string Kern::analyze() {
     map<string, string> meta = Kern::meta();
     string composer = meta["composer"];
 
-    returnstr += "Composer:\t" + composer + "\n";    
-    
+    returnstr += "Composer:\t" + composer + "\n\n";    
+
     //scales:
     //================================
-    
+    returnstr += "Rhythmic Distribution: \n";
+
+    map<int, float> rhythmdist = rhythmDist();
+
+    for ( int i = 1; i <= 64; i *= 2 ) {
+        returnstr += to_string(rhythmdist[i] * 100);
+        returnstr += "\n";
+    }
+
     //finished
     return returnstr;
 }
