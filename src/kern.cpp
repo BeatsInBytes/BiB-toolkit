@@ -41,28 +41,41 @@ string numList(string song, bool format) {
     string numlist, remove;
     remove = grep(grep(grep(song, "!", 'v'), "*", 'v'), "=", 'v');
     stringstream f(remove);
-    string line;    
+    string line;
+
+    int charNum = 0;
     while (getline(f, line)) {
         line = string(line);
         string newline;
+    
         // cout << line << endl;
         // cout << line.length() << endl;
+        bool digit = false;
         for ( int i = 0; i < line.length(); i++ ) {
             char character = line[i];
-            if (isdigit(character) && format) {
-                newline += character;
+            if ( format ) {
+                if (isdigit(character)) {
+                    newline += character;
+                }
+                else if ( character == '\t') {
+                    newline += "\t";
+                }
+                else if ( character == ' ' ) {
+                    newline += " ";
+                }
             }
-            else if ( character == '\t' && format) {
-                newline += "\t";
+            else {
+                if (isdigit(character) ) {
+                    numlist += character;
+                    digit = true;
+                }
+                else if ( (character != '\t' && character != ' ') && digit ) {
+                    digit = false;
+                    numlist += "\n";
+                }
             }
-            else if ( character == ' ' && format ) {
-                newline += " ";
-            }
-            else if (!(format) && isdigit(character) ) {
-                numlist += character;
-                numlist += "\n";
-                // newline += "\n";
-            }
+
+            
         }
         if ( newline != "" && format ) {
             numlist += newline + "\n";
@@ -157,7 +170,7 @@ map<int, float> Kern::rhythmDist() {
 
     string list = numList(contents, false);
     string line;
-
+    cout << list << endl;
     stringstream f(list);
 
     while (getline(f, line)) {
