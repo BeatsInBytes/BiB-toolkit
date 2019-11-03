@@ -5,21 +5,30 @@
 using namespace std;
     
 class Kern {
-
-    string title;
     string file_path;
     string contents;
 
+    string rhythm;
+    string degree;
+    int numTrack;
+
+
     public:
         
-        Kern(string path);
+    Kern(string path);
 
-        // Data fetch methods
-        string getContents();
+    // fetching data
+    string getContents();
 
-        // aata add methods
-        map<string, string> meta();
-        vector<int> themes(), scales();
-        map<int, float> pitchDist(), rhythmDist();
+    // analysis methods
+    string keySig();
+    map<string, string> meta();
+    vector<int> themes(), scales();
+    map<int, float> pitchDist(), rhythmDist();
+    
+    // kern processing
+    int trackNum(string file);
+
+    string analyze();
 
 };

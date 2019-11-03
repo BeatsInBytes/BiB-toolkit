@@ -6,7 +6,7 @@ using namespace std;
 bool file_exists(const std::string& name) {
     if (FILE *file = fopen(name.c_str(), "r")) {
         fclose(file);
-        return true;
+        return true; 
     }
     return false;
 }
@@ -20,17 +20,19 @@ int main(int argc, char * argv[]) {
         if ( file_exists(argv[i]) ) {
             fileList.push_back(argv[i]);
         }
+        else {
+            cout << "BiB: \e[31merror:\e[0m \"\e[33m" << argv[i] << "\e[0m\" is not a recognized argument." << endl;
+            return 0;
+        }
     }
 
     if ( fileList.size() == 0 ) {
-        cout << "bib: \e[31merror:\e[0m No input files specified";
+        cout << "BiB: \e[31merror:\e[0m No input files specified" << endl;
         return 1;
     }
     for ( int i = 0; i < fileList.size(); i++) {
         string filepath = fileList[i];
         Kern kern(filepath);
-
-        cout << kern.analyze() << endl;
-        // cout << kern.getContents() << endl;
+        cout << kern.analyze();
     }
 }
